@@ -13,6 +13,17 @@ This repository contains the following contents.
 * Learning data for finger gesture recognition and notebook for learning
 
 # Requirements
+## Create python3 env
+
+```bash
+python3 -m venv AI
+source AI/bin/active
+```
+## Install requirements
+
+```bash
+pip3 install -r requirements.txt
+```
 * mediapipe 0.8.1
 * OpenCV 3.4.2 or Later
 * Tensorflow 2.3.0 or Later<br>tf-nightly 2.5.0.dev or later (Only when creating a TFLite for an LSTM model)
@@ -22,7 +33,7 @@ This repository contains the following contents.
 # Demo
 Here's how to run the demo using your webcam.
 ```bash
-python app.py
+python3 app.py
 ```
 
 The following options can be specified when running the demo.
