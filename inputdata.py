@@ -110,5 +110,3 @@ if start_logging and label:
     st.write("Logging stopped.")
 else:
     st.write("Enter a label and click 'Start Logging' to begin.")
-  
-    

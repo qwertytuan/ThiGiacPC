@@ -194,8 +194,6 @@ def main():
         # Release the camera and close all OpenCV windows
         cap.release()
         cv.destroyAllWindows()
-    
-    
 
 def select_mode(key, mode):
     number = -1
