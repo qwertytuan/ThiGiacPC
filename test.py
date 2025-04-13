@@ -2,6 +2,7 @@ import csv
 import copy
 from collections import Counter
 from collections import deque
+import json
 
 import cv2 as cv
 import mediapipe as mp
@@ -10,10 +11,9 @@ from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 import streamlit as st
+from streamlit.components.v1 import html
 from PIL import Image
 import app as ap
-
-
 
 def main():
     st.title("Hand Sign")
@@ -22,8 +22,10 @@ def main():
         cap_device = 0
     elif cap_device == "External Cam":
         cap_device = 2
-    cap_width = st.number_input("Camera Width", min_value=1, max_value=1920, value=600)
-    cap_height = st.number_input("Camera Height", min_value=1, max_value=1080, value=720)
+        
+       
+    cap_width = st.slider("Camera Width", min_value=10, max_value=1920, value=1280,step=10)
+    cap_height = st.slider("Camera Height", min_value=10, max_value=1080, value=720,step=10)
     isFlip = st.checkbox("Flip Image", value=True)
     use_static_image_mode = st.checkbox("Use Static Image Mode", value=False)
     use_brect = st.checkbox("Use Bounding Rect", value=True)
@@ -71,6 +73,7 @@ def main():
                 point_history_classifier_labels = [
                         row[0] for row in point_history_classifier_labels
                 ]
+
 
         # FPS Measurement ########################################################
         cvFpsCalc = CvFpsCalc(buffer_len=10)
@@ -129,6 +132,7 @@ def main():
 
                                 # Hand sign classification
                                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
+                                print(hand_sign_id)
                                 if hand_sign_id == 2:  # Point gesture
                                         point_history.append(landmark_list[8])
                                 else:
@@ -144,7 +148,9 @@ def main():
                                 # Calculates the gesture IDs in the latest detection
                                 finger_gesture_history.append(finger_gesture_id)
                                 most_common_fg_id = Counter(finger_gesture_history).most_common()
-
+                                
+                                #############################
+                                
                                 # Drawing part
                                 debug_image = ap.draw_bounding_rect(use_brect, debug_image, brect)
                                 
@@ -157,6 +163,8 @@ def main():
                                         keypoint_classifier_labels[hand_sign_id],
                                         point_history_classifier_labels[most_common_fg_id[0][0]],
                                 )
+                                # print(keypoint_classifier_labels[hand_sign_id])
+                                # print(point_history_classifier_labels[most_common_fg_id[0][0]])
                 else:
                         point_history.append([0, 0])
 
@@ -178,6 +186,7 @@ def main():
         # Release the camera and close all OpenCV windows
         cap.release()
         cv.destroyAllWindows()
+        
         
 if __name__ == "__main__":     
         main()

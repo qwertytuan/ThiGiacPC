@@ -155,8 +155,7 @@ def main():
 
                 # Calculates the gesture IDs in the latest detection
                 finger_gesture_history.append(finger_gesture_id)
-                most_common_fg_id = Counter(
-                    finger_gesture_history).most_common()
+                most_common_fg_id = Counter(finger_gesture_history).most_common()
 
                 # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
@@ -168,6 +167,7 @@ def main():
                     keypoint_classifier_labels[hand_sign_id],
                     point_history_classifier_labels[most_common_fg_id[0][0]],
                 )
+
         else:
             point_history.append([0, 0])
 
@@ -470,8 +470,7 @@ def draw_bounding_rect(use_brect, image, brect):
     return image
 
 
-def draw_info_text(image, brect, handedness, hand_sign_text,
-                   finger_gesture_text):
+def draw_info_text(image, brect, handedness, hand_sign_text,finger_gesture_text):
     cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
                  (0, 0, 0), -1)
 
