@@ -1,13 +1,10 @@
 from collections import deque
 import cv2 as cv
-
-
 class CvFpsCalc(object):
     def __init__(self, buffer_len=1):
         self._start_tick = cv.getTickCount()
         self._freq = 1000.0 / cv.getTickFrequency()
         self._difftimes = deque(maxlen=buffer_len)
-
     def get(self):
         current_tick = cv.getTickCount()
         different_time = (current_tick - self._start_tick) * self._freq
@@ -19,3 +16,5 @@ class CvFpsCalc(object):
         fps_rounded = round(fps, 2)
 
         return fps_rounded
+
+
