@@ -4,3 +4,6 @@ tensorflow
 tf-nightly
 scikit-learn
 matplotlib
+seaborn
+streamlit
+
