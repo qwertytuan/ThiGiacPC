@@ -13,9 +13,36 @@ import streamlit as st
 from streamlit.components.v1 import html
 from PIL import Image
 import app as ap
+import subprocess
+import time
 
 def main():
-    st.title("Hand Sign")
+    st.title("Hand Sign Command Control")
+    hand_sign_labels = load_hand_sign_labels('model/keypoint_classifier/keypoint_classifier_label.csv')
+
+    # Load existing hand sign-to-command mappings
+    command_mapping = load_hand_sign_commands('hand_sign_commands.csv')
+
+    # Sidebar for assigning commands to hand signs
+    st.sidebar.title("Assign Commands to Hand Signs")
+    selected_hand_sign = st.sidebar.selectbox("Select a hand sign:", hand_sign_labels)
+    command = st.sidebar.text_input("Enter the command for this hand sign:")
+    if st.sidebar.button("Assign Command"):
+        if selected_hand_sign and command:
+            command_mapping[selected_hand_sign] = command
+            save_hand_sign_commands(command_mapping, 'hand_sign_commands.csv')
+            st.sidebar.success(f"Assigned command '{command}' to hand sign '{selected_hand_sign}'.")
+        else:
+            st.sidebar.error("Please select a hand sign and enter a command.")
+
+    # Display existing mappings
+    st.sidebar.subheader("Existing Hand Sign Commands")
+    if command_mapping:
+        for hand_sign, command in command_mapping.items():
+            st.sidebar.write(f"**{hand_sign}**: {command}")
+    else:
+        st.sidebar.write("No existing hand sign commands found.")
+        
     cap_device = st.selectbox("Select Camera",["Web Cam", "External Cam"])
     if cap_device == "Web Cam":
         cap_device = 0
@@ -85,8 +112,12 @@ def main():
         finger_gesture_history = deque(maxlen=history_length)
 
         #  ########################################################################
-        mode = 0
-
+        
+        mode = 0 # Default mode
+        
+        command_cooldown = 5
+        # Dictionary to track the last execution time for each hand sign
+        last_execution_time = {}
         while True:
                 fps = cvFpsCalc.get()
 
@@ -131,6 +162,7 @@ def main():
 
                                 # Hand sign classification
                                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
+                                detected_hand_sign = hand_sign_labels[hand_sign_id]
                                 print(hand_sign_id)
                                 if hand_sign_id == 2:  # Point gesture
                                         point_history.append(landmark_list[8])
@@ -162,6 +194,16 @@ def main():
                                         keypoint_classifier_labels[hand_sign_id],
                                         point_history_classifier_labels[most_common_fg_id[0][0]],
                                 )
+                                current_time = time.time()
+                                last_time = last_execution_time.get(detected_hand_sign, 0)
+                                if detected_hand_sign in command_mapping and (current_time - last_time > command_cooldown):
+                                        st.write(f"Detected hand sign: {detected_hand_sign}")
+                                        execute_command(command_mapping[detected_hand_sign])
+                                        last_execution_time[detected_hand_sign] = current_time
+                                elif detected_hand_sign in command_mapping:
+                                        print(f"Detected hand sign: {detected_hand_sign} (Cooldown in effect)")
+                                else:
+                                        print(f"Detected hand sign: {detected_hand_sign} (No command assigned)")
                                 # print(keypoint_classifier_labels[hand_sign_id])
                                 # print(point_history_classifier_labels[most_common_fg_id[0][0]])
                 else:
@@ -186,6 +228,47 @@ def main():
         cap.release()
         cv.destroyAllWindows() # type: ignore
         
+def execute_command(command):
+    try:
+        result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
+        print(f"Command executed successfully: {command}")
+        print(f"Output: {result.stdout}")
+          # Add a delay after executing the command
+    except subprocess.CalledProcessError as e:
+        st.error(f"Error while executing command: {e.stderr}")
+          # Add a delay even if the command fails
+
+
+# Function to load hand sign labels
+def load_hand_sign_labels(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.reader(f)
+            labels = [row[0] for row in reader]
+        return labels
+    except FileNotFoundError:
+        st.error(f"File not found: {file_path}")
+        return []
+
+# Function to save hand sign-to-command mappings
+def save_hand_sign_commands(mapping, file_path):
+    with open(file_path, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.writer(f)
+        for hand_sign, command in mapping.items():
+            writer.writerow([hand_sign, command])
+
+# Function to load hand sign-to-command mappings
+def load_hand_sign_commands(file_path):
+    mapping = {}
+    try:
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) == 2:
+                    mapping[row[0]] = row[1]
+    except FileNotFoundError:
+        pass  # If the file doesn't exist, return an empty mapping
+    return mapping
         
 if __name__ == "__main__":     
         main()
