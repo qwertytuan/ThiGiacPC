@@ -149,21 +149,40 @@ def main():
                         for hand_landmarks, handedness in zip(results.multi_hand_landmarks,
                                                                                                   results.multi_handedness):
                                 # Bounding box calculation
+                                print("Hand landmark:"+str(hand_landmarks))
                                 brect = ap.calc_bounding_rect(debug_image, hand_landmarks)
+                                print("Bounding Box"+str(brect))
+                                
                                 # Landmark calculation
+                                print("Hand landmarks"+str(hand_landmarks))
                                 landmark_list = ap.calc_landmark_list(debug_image, hand_landmarks)
-
+                                print("Landmark List"+str(landmark_list))
+                                
+                                
                                 # Conversion to relative coordinates / normalized coordinates
+                                print("Landmark List"+str(landmark_list))
                                 pre_processed_landmark_list = ap.pre_process_landmark(landmark_list)
+                                print("Pre-processed Landmark List"+str(pre_processed_landmark_list))
+                                
+                                print("point_history"+str(point_history))
                                 pre_processed_point_history_list = ap.pre_process_point_history(debug_image, point_history)
+                                print("Pre-processed Point History List"+str(pre_processed_point_history_list))
+                                
+                                
                                 # Write to the dataset file
                                 ap.logging_csv(number, mode, pre_processed_landmark_list,
                                                         pre_processed_point_history_list)
 
                                 # Hand sign classification
+                            
                                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
+                    
+                                
+                          
                                 detected_hand_sign = hand_sign_labels[hand_sign_id]
-                                print(hand_sign_id)
+                   
+                                
+                               
                                 if hand_sign_id == 2:  # Point gesture
                                         point_history.append(landmark_list[8])
                                 else:
