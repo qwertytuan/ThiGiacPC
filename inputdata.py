@@ -56,6 +56,20 @@ start_logging = st.sidebar.button("Start Logging")
 st.header("Webcam Feed")
 video_placeholder = st.empty()
 
+# State for holding the logging status
+is_logging = st.session_state.get("is_logging", False)
+
+# Start/Stop logging button
+if "is_logging" not in st.session_state:
+    st.session_state.is_logging = False
+
+toggle_logging = st.button("Hold to Log")
+
+if toggle_logging:
+    st.session_state.is_logging = True
+else:
+    st.session_state.is_logging = False
+###################
 if start_logging and label:
     number= write_label_to_csv(label)
     cap = cv.VideoCapture(0)
@@ -85,8 +99,10 @@ if start_logging and label:
                 pre_processed_landmark_list = pre_process_landmark(landmark_list)
 
                 # Log data to CSV
-                logging_csv(number, 1, pre_processed_landmark_list, [])
-                st.write(f"Logged data for label: {label}")
+                if st.session_state.is_logging:
+                    logging_csv(number, 1, pre_processed_landmark_list, [])
+                    st.write(f"Logged data for label: {label}")
+
                 # Draw landmarks on the frame
                 mp_drawing = mp.solutions.drawing_utils
                 mp_drawing.draw_landmarks(
@@ -94,6 +110,7 @@ if start_logging and label:
                     mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
                     mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)
                 )
+
 
         # Convert the frame to RGB for Streamlit
         frame_rgb = cv.cvtColor(debug_image, cv.COLOR_BGR2RGB)
