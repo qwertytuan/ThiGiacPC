@@ -208,7 +208,6 @@ def calc_bounding_rect(image, landmarks):
         landmark_array = np.append(landmark_array, landmark_point, axis=0)
 
     x, y, w, h = cv.boundingRect(landmark_array)
-
     return [x, y, x + w, y + h]
 
 
