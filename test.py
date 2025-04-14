@@ -2,7 +2,6 @@ import csv
 import copy
 from collections import Counter
 from collections import deque
-import json
 
 import cv2 as cv
 import mediapipe as mp
@@ -42,9 +41,9 @@ def main():
         use_brect = True
 
         # Camera preparation ###############################################################
-        cap = cv.VideoCapture(cap_device)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+        cap = cv.VideoCapture(cap_device) # type: ignore
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width) # type: ignore
+        cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height) # type: ignore
 
         # Model load #############################################################
         mp_hands = mp.solutions.hands
@@ -92,7 +91,7 @@ def main():
                 fps = cvFpsCalc.get()
 
                 # Process Key (ESC: end) #################################################
-                key = cv.waitKey(10)
+                key = cv.waitKey(10) # type: ignore
                 if key == 27:  # ESC
                         break
                 number, mode = ap.select_mode(key, mode)
@@ -102,12 +101,12 @@ def main():
                 if not ret:
                         break
                 if isFlip==True:
-                        image = cv.flip(image, 1)
+                        image = cv.flip(image, 1) # type: ignore
                 else:
                         image = cv.flip(image, 0)
 
                 # Detection implementation #############################################################
-                image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+                image = cv.cvtColor(image, cv.COLOR_BGR2RGB) # type: ignore
                 debug_image = copy.deepcopy(image)
 
                 image.flags.writeable = False
@@ -185,7 +184,7 @@ def main():
         st.write("Webcam stopped.")
         # Release the camera and close all OpenCV windows
         cap.release()
-        cv.destroyAllWindows()
+        cv.destroyAllWindows() # type: ignore
         
         
 if __name__ == "__main__":     
