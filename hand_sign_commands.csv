@@ -1,2 +1,4 @@
-﻿Thumb Up,"firefox ""https://youtu.be/dQw4w9WgXcQ?si=RQHzAZQibg1Za6eG"""
-Close,"echo ""HelloWorld"""
+﻿Thumb Up,amixer sset Master 10%+ 
+Close,"echo ""Hello World"""
+Thumb Down,amixer sset Master 10%-
+Turn left,echo 
