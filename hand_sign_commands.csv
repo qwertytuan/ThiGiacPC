@@ -1,0 +1,4 @@
+﻿Thumb Up,amixer sset Master 10%+ 
+Close,"echo ""Hello World"""
+Thumb Down,amixer sset Master 10%-
+Turn left,echo 
