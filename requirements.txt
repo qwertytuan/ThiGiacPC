@@ -55,7 +55,7 @@ ml_dtypes==0.5.1
 namex==0.0.8
 narwhals==1.34.1
 nest-asyncio==1.6.0
-numpy==1.26.4
+numpy
 opencv-contrib-python==4.11.0.86
 opencv-python==4.11.0.86
 opt_einsum==3.4.0
@@ -100,7 +100,7 @@ tensorboard==2.19.0
 tensorboard-data-server==0.7.2
 tensorflow
 termcolor==3.0.0
-tf_nightly==2.20.0.dev20250331
+tf_nightly
 threadpoolctl==3.6.0
 toml==0.10.2
 tomlkit==0.13.2

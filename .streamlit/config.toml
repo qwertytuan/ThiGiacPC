@@ -1,0 +1,3 @@
+[server]
+sslCertFile = '/home/tuan/sslCert/certificate.crt'
+sslKeyFile = '/home/tuan/sslCert/private.key'
