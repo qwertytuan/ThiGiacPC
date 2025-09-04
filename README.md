@@ -50,17 +50,51 @@ The project uses the following main libraries:
    ```
 
 2. **Install dependencies using uv (recommended)**:
-   ```bash
-   pip install uv
-   uv pip install -r requirements.txt
-   ```
+Install uv with standalone installers:
 
-   Or using pip directly:
+```bash
+# On macOS and Linux.
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+```bash
+# On Windows.
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Or, from [PyPI](https://pypi.org/project/uv/):
+
+```bash
+# With pip.
+pip install uv
+```
+
+```bash
+# Or pipx.
+pipx install uv
+```
+
+If installed via the standalone installer, uv can update itself to the latest version:
+
+```bash
+uv self update
+```
+
+See the [installation documentation](https://docs.astral.sh/uv/getting-started/installation/) for
+details and alternative installation methods.
+
+After that:
+Run
+```bash
+uv sync
+```
+
+3. **Or using pip directly**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Verify installation**:
+4. **Verify installation**:
    ```bash
    python -c "import mediapipe, cv2, streamlit, tensorflow; print('All dependencies installed successfully!')"
    ```
@@ -69,10 +103,10 @@ The project uses the following main libraries:
 
 ### 1. Streamlit Web Application (Recommended)
 
-The easiest way to use the hand gesture recognition system:
+The easiest way to use the hand gesture recognition system using uv:
 
 ```bash
-streamlit run TGPC.py
+uv run streamlit run TGPC.py
 ```
 
 **Features of the web app**:
@@ -87,7 +121,7 @@ streamlit run TGPC.py
 For direct usage without a web interface:
 
 ```bash
-python .app.py --device 0 --width 1280 --height 720
+uv run .app.py --device 0 --width 1280 --height 720
 ```
 
 **Command line options**:
@@ -110,7 +144,7 @@ python .app.py --device 0 --width 1280 --height 720
 To collect data for training your own gestures:
 
 ```bash
-streamlit run inputdata.py
+uv run streamlit run inputdata.py
 ```
 
 This tool allows you to:
@@ -179,7 +213,7 @@ In the Streamlit app, you can adjust:
 
 1. **Collect Data**:
    ```bash
-   streamlit run inputdata.py
+   uv run streamlit run inputdata.py
    ```
    - Enter a label for your gesture
    - Select mode (Keypoint or Point History)
