@@ -194,7 +194,7 @@ def calc_bounding_rect(image, landmarks):
 
     landmark_array = np.empty((0, 2), int)
 
-    for _, landmark in enumerate(landmarks.landmark):
+    for landmark in landmarks:
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
@@ -203,6 +203,7 @@ def calc_bounding_rect(image, landmarks):
         landmark_array = np.append(landmark_array, landmark_point, axis=0)
 
     x, y, w, h = cv.boundingRect(landmark_array)
+
     return [x, y, x + w, y + h]
 
 
@@ -211,11 +212,9 @@ def calc_landmark_list(image, landmarks):
 
     landmark_point = []
 
-    
-    for _, landmark in enumerate(landmarks.landmark):
+    for landmark in landmarks:
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
-       
 
         landmark_point.append([landmark_x, landmark_y])
 
@@ -466,7 +465,7 @@ def draw_info_text(image, brect, handedness, hand_sign_text,finger_gesture_text)
     cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
                  (0, 0, 0), -1)
 
-    info_text = handedness.classification[0].label[0:]
+    info_text = handedness.category_name
     if hand_sign_text != "":
         info_text = info_text + ':' + hand_sign_text
     cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),

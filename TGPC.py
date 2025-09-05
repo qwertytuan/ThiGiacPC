@@ -5,6 +5,8 @@ from collections import deque
 
 import cv2 as cv
 import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 
 from utils import CvFpsCalc
 from model import KeyPointClassifier
@@ -74,13 +76,16 @@ def main():
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height) 
 
      
-        mp_hands = mp.solutions.hands
-        hands = mp_hands.Hands(
-                static_image_mode=use_static_image_mode,
-                max_num_hands=max_num_hands,
-                min_detection_confidence=min_detection_confidence,
-                min_tracking_confidence=min_tracking_confidence,
+        base_options = python.BaseOptions(model_asset_path='hand_landmarker.task', delegate=python.BaseOptions.Delegate.GPU)
+        options = vision.HandLandmarkerOptions(
+            base_options=base_options,
+            running_mode=vision.RunningMode.IMAGE,
+            num_hands=max_num_hands,
+            min_hand_detection_confidence=min_detection_confidence,
+            min_hand_presence_confidence=min_tracking_confidence,
+            min_tracking_confidence=min_tracking_confidence
         )
+        detector = vision.HandLandmarker.create_from_options(options)
 
         keypoint_classifier = KeyPointClassifier()
 
@@ -138,12 +143,13 @@ def main():
                 debug_image = copy.deepcopy(image)
 
                 image.flags.writeable = False
-                results = hands.process(image)
+                mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
+                detection_result = detector.detect(mp_image)
                 image.flags.writeable = True
 
                 
-                if results.multi_hand_landmarks is not None:
-                        for hand_landmarks, handedness in zip(results.multi_hand_landmarks,results.multi_handedness):
+                if detection_result.hand_landmarks:
+                        for hand_landmarks, handedness in zip(detection_result.hand_landmarks, detection_result.handedness):
                                 
                                 brect = ap.calc_bounding_rect(debug_image, hand_landmarks)
                         
@@ -197,7 +203,7 @@ def main():
                                 debug_image = ap.draw_info_text(
                                         debug_image,
                                         brect,
-                                        handedness,
+                                        handedness[0],
                                         keypoint_classifier_labels[hand_sign_id],
                                         point_history_classifier_labels[most_common_fg_id[0][0]],
                                 )
